@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="commands" name="commands" schema="schema/commands.exsd"/>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="com.worldline.wlrobots.clic.internal.view.CommandLineClientView"
+            icon="icons/icon.png"
+            id="com.worldline.wlrobots.clic.view"
+            name="CLiC"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="com.worldline.wlrobots.clic.commands">
+      <command
+            description="Displays the list of the available commands"
+            id="list"
+            implementation="com.worldline.wlrobots.clic.internal.commands.impl.ListCommandsCommand">
+      </command>
+      <command
+            description="Gives parameters information for given command"
+            id="help"
+            implementation="com.worldline.wlrobots.clic.internal.commands.impl.HelpCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="com.worldline.wlrobots.clic.internal.console.InteractiveConsoleFactory"
+            icon="icons/icon.png"
+            label="CLiC console">
+      </consoleFactory>
+   </extension>
+
+</plugin>

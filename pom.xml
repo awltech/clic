@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.worldline.wlrobots</groupId>
+	<artifactId>clic</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>CLiC</name>
+	<packaging>pom</packaging>
+
+	<url>https://github.com/awltech/clic</url>
+	<description>CLiC is a command line interpreter for Eclipse.</description>
+	<inceptionYear>2013</inceptionYear>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/awltech/clic/issues</url>
+	</issueManagement>
+
+	<licenses>
+		<license>
+			<name>LGPL 2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+			<distribution>repo</distribution>
+			<comments>GNU LESSER GENERAL PUBLIC LICENSE</comments>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:https://github.com/awltech/clic.git</connection>
+		<developerConnection>scm:git:https://github.com/awltech/clic.git</developerConnection>
+		<url>https://github.com/awltech/clic/</url>
+	</scm>
+
+	<organization>
+		<name>Worldline</name>
+		<url>http://www.worldline.com/</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>Maxence Vanbesien</name>
+			<email>maxence.vanbesien@worldline.com</email>
+			<id>mvanbesien</id>
+			<url>https://github.com/mvanbesien</url>
+		</developer>
+		<developer>
+			<name>Antoine Neveux</name>
+			<email>antoine.neveux@worldline.com</email>
+			<id>aneveux</id>
+			<url>https://github.com/aneveux</url>
+		</developer>
+		<developer>
+			<name>Alexis Havez</name>
+			<email>alexis.havez@worldline.com</email>
+			<id>ahavez</id>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tycho-version>0.18.1</tycho-version>
+		<eclipse-mirror>http://eclipse.ialto.com</eclipse-mirror>
+		<eclipse-site>${eclipse-mirror}/releases/${platform-version-name}</eclipse-site>
+		<release-type>final</release-type>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>platform-kepler</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>platform-version-name</name>
+					<value>kepler</value>
+				</property>
+			</activation>
+			<properties>
+				<platform-version>[4.3,4.4)</platform-version>
+				<platform-version-name>kepler</platform-version-name>
+			</properties>
+		</profile>
+	</profiles>
+
+	<modules>
+		<module>com.worldline.wlrobots.clic</module>
+		<module>com.worldline.wlrobots.clic.feature</module>
+		<module>com.worldline.wlrobots.clic.repository</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<format>yyyyMMddHHmm'-${platform-version-name}-${release-type}'</format>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<environments>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<basedir>${basedir}</basedir>
+					<header>etc/header.txt</header>
+					<includes>
+						<include>**/src/**</include>
+					</includes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<mapping>
+						<ecmd>XML_STYLE</ecmd>
+						<mwe>XML_STYLE</mwe>
+						<ext>SLASHSTAR_STYLE</ext>
+						<xpt>XML_STYLE</xpt>
+						<java>SLASHSTAR_STYLE</java>
+						<aj>SLASHSTAR_STYLE</aj>
+						<properties>SCRIPT_STYLE</properties>
+						<xml>XML_STYLE</xml>
+					</mapping>
+					<useDefaultMapping>false</useDefaultMapping>
+					<properties>
+						<year>2013</year>
+					</properties>
+					<encoding>UTF-8</encoding>
+				</configuration>
+				<executions>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>eclipse-platform</id>
+			<layout>p2</layout>
+			<url>${eclipse-site}</url>
+		</repository>
+	</repositories>
+</project>
