@@ -86,7 +86,6 @@
 
 	<modules>
 		<module>com.worldline.clic</module>
-		<module>com.worldline.clic.archetype</module>
 		<module>com.worldline.clic.feature</module>
 		<module>com.worldline.clic.repository</module>
 	</modules>
