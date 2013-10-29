@@ -6,6 +6,6 @@
 		<artifactId>${rootArtifactId}</artifactId>
 		<version>${version}-SNAPSHOT</version>
 	</parent>
-	<artifactId>${groupId}.${rootArtifactId}.core</artifactId>
+	<artifactId>${groupId}.${rootArtifactId}</artifactId>
 	<packaging>eclipse-plugin</packaging>
 </project>

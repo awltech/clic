@@ -4,7 +4,7 @@
 
 	<groupId>${groupId}</groupId>
 	<artifactId>${artifactId}</artifactId>
-	<version>${version}</version>
+	<version>${version}-SNAPSHOT</version>
 	<name>CLiC Plugin - ${artifactId}</name>
 	<packaging>pom</packaging>
 
@@ -93,6 +93,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<modules>
+		<module>${rootArtifactId}.core</module>
+		<module>${rootArtifactId}.feature</module>
+		<module>${rootArtifactId}.repository</module>
+	</modules>
 
 	<repositories>
 		<repository>

@@ -9,7 +9,7 @@
       <command
             description="Just an example of a command you could develop..."
             id="example:hello"
-            implementation="${groupId}.${rootArtifactId}.core.commands.HelloCommand">
+            implementation="${groupId}.${rootArtifactId}.commands.HelloCommand">
       </command>
    </extension>
 

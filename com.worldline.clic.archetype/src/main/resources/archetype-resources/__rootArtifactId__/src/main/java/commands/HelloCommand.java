@@ -1,10 +1,9 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${groupId}.${rootArtifactId}.core.commands;
+package ${groupId}.${rootArtifactId}.commands;
 
-import ${groupId}.${rootArtifactId}.core.Activator;
-import ${groupId}.${rootArtifactId}.core.Messages;
+import ${groupId}.${rootArtifactId}.Messages;
 import com.worldline.clic.commands.AbstractCommand;
 import com.worldline.clic.commands.CommandContext;
 

@@ -1,7 +1,7 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${groupId}.${rootArtifactId}.core;
+package ${groupId}.${rootArtifactId};
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;

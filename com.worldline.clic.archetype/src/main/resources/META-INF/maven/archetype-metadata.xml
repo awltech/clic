@@ -18,7 +18,7 @@
     </fileSet>
   </fileSets>
   <modules>
-    <module id="${groupId}.${rootArtifactId}.core" dir="__groupId__.__rootArtifactId__.core" name="${groupId}.${rootArtifactId}.core">
+    <module id="${rootArtifactId}" dir="__rootArtifactId__" name="${rootArtifactId}">
       <fileSets>
         <fileSet filtered="true" packaged="true" encoding="UTF-8">
           <directory>src/main/java</directory>
@@ -32,7 +32,7 @@
             <include>**/*.properties</include>
           </includes>
         </fileSet>
-        <fileSet encoding="UTF-8">
+        <fileSet filtered="true" encoding="UTF-8">
           <directory>META-INF</directory>
           <includes>
             <include>**/*.MF</include>
@@ -55,7 +55,7 @@
         </fileSet>
       </fileSets>
     </module>
-    <module id="${groupId}.${rootArtifactId}.feature" dir="__groupId__.__rootArtifactId__.feature" name="${groupId}.${rootArtifactId}.feature">
+    <module id="${rootArtifactId}.feature" dir="__rootArtifactId__.feature" name="${rootArtifactId}.feature">
       <fileSets>
         <fileSet filtered="true" encoding="UTF-8">
           <directory></directory>
@@ -67,7 +67,7 @@
         </fileSet>
       </fileSets>
     </module>
-    <module id="${groupId}.${rootArtifactId}.repository" dir="__groupId__.__rootArtifactId__.repository" name="${groupId}.${rootArtifactId}.core">
+    <module id="${rootArtifactId}.repository" dir="__rootArtifactId__.repository" name="${rootArtifactId}.core">
       <fileSets>
         <fileSet filtered="true" encoding="UTF-8">
           <directory></directory>
