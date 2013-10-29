@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature
+		url="features/com.worldline.clic.feature_0.1.0.qualifier.jar"
+		id="com.worldline.clic.feature" version="0.1.0.qualifier">
+		<category name="CLiC" />
+	</feature>
+	<category-def name="CLiC" label="CLiC">
+		<description>
+			CLiC is a Command Line Interpreter in Eclipse allowing to define robots.
+		</description>
+	</category-def>
+</site>

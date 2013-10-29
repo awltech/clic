@@ -4,9 +4,9 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.worldline.wlrobots</groupId>
+	<groupId>com.worldline.clic</groupId>
 	<artifactId>clic</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>CLiC</name>
 	<packaging>pom</packaging>
 
@@ -85,9 +85,10 @@
 	</profiles>
 
 	<modules>
-		<module>com.worldline.wlrobots.clic</module>
-		<module>com.worldline.wlrobots.clic.feature</module>
-		<module>com.worldline.wlrobots.clic.repository</module>
+		<module>com.worldline.clic</module>
+		<module>com.worldline.clic.archetype</module>
+		<module>com.worldline.clic.feature</module>
+		<module>com.worldline.clic.repository</module>
 	</modules>
 
 	<build>

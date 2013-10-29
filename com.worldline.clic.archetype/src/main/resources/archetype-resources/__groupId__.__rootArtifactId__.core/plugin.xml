@@ -1,0 +1,16 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.worldline.clic.commands">
+      <command
+            description="Just an example of a command you could develop..."
+            id="example:hello"
+            implementation="${groupId}.${rootArtifactId}.core.commands.HelloCommand">
+      </command>
+   </extension>
+
+</plugin>
