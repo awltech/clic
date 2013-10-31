@@ -67,6 +67,7 @@ public class HelpCommand extends AbstractCommand {
 	public void configureParser() {
 		command = parser.accepts("command").withRequiredArg()
 				.ofType(String.class).describedAs("command").required();
+		
 	}
 
 	/**

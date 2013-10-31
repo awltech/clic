@@ -21,8 +21,11 @@
  */
 package com.worldline.clic.internal.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,15 +80,31 @@ public class CommandRegistry {
 	 */
 	private void loadExtensionPoint() {
 		commands.clear();
+		
+		commandFlowCollection.clear();
 		final IExtensionPoint extension = Platform.getExtensionRegistry()
 				.getExtensionPoint(Activator.PLUGIN_ID, "commands");
 		for (final IConfigurationElement element : extension
-				.getConfigurationElements())
+				.getConfigurationElements()) {
 			if ("command".equals(element.getName())) {
 				final String id = element.getAttribute("id");
 				final String description = element.getAttribute("description");
 				commands.put(id, new CommandWrapper(id, description, element));
 			}
+			if ("commandFlow".equals(element.getName())) {
+				commandRefList.clear();
+				final String name = element.getAttribute("name");
+				for (IConfigurationElement subElement : element.getChildren()) {
+					if ("commandRef".equals(subElement.getName())) {
+						final String nameRef = subElement.getAttribute("name");
+						commandRefList.add(nameRef);
+					}
+				}
+				CommandFlowWrapper commandFlow = new CommandFlowWrapper(name, commandRefList);
+				this.commandFlowCollection.add(commandFlow);
+			}
+			
+		}
 	}
 
 	/**
@@ -96,7 +115,17 @@ public class CommandRegistry {
 	 * actually build the command.
 	 */
 	private final Map<String, CommandWrapper> commands = new HashMap<String, CommandWrapper>();
-
+	
+	//private final Map<String, CommandFlowWrapper> commandsFlow = new HashMap<String, CommandFlowWrapper>();
+	
+	public final List<String> commandRefList = new ArrayList<>();
+	
+	public Collection <CommandFlowWrapper> getCommandFlow() {
+		return commandFlowCollection;
+	}
+	
+	private Collection<CommandFlowWrapper> commandFlowCollection = new ArrayList<CommandFlowWrapper>();
+	
 	/**
 	 * Allows to get the singleton instance in order to query for some
 	 * information about commands
