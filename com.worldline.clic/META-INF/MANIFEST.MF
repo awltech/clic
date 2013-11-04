@@ -27,4 +27,4 @@ Export-Package: com.google.common.annotations,
  joptsimple.util
 Bundle-ClassPath: lib/guava-10.0.1.jar,
  .,
- lib/jopt-simple-4.5.jar
+ lib/jopt-simple-4.6-SNAPSHOT.jar
