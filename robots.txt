@@ -1,0 +1,3 @@
+Sitemap: http://awltech.github.io/clic/sitemap.xml
+User-agent: *
+Allow: /
