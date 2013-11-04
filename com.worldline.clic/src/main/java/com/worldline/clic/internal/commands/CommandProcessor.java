@@ -22,6 +22,7 @@
 package com.worldline.clic.internal.commands;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import joptsimple.OptionException;
@@ -55,7 +56,7 @@ import com.worldline.clic.internal.ClicMessages;
  * @see AbstractCommand
  */
 public class CommandProcessor extends Job {
-
+	public List<String> paramList = new ArrayList<>();
 	/**
 	 * {@link #commandChain} is a {@link String} containing the exact command
 	 * which has been provided by the end-user
@@ -77,8 +78,7 @@ public class CommandProcessor extends Job {
 	 *            the execution context to be used during the whole lifecycle of
 	 *            the processed command
 	 */
-	public CommandProcessor(final String commandChain,
-			final CommandContext context) {
+	public CommandProcessor(final String commandChain, final CommandContext context) {
 		super("Command Processor");
 		this.context = context;
 		this.commandChain = commandChain;
@@ -105,38 +105,48 @@ public class CommandProcessor extends Job {
 	 * @param context
 	 *            the execution context to be used
 	 */
-	private static void processCommand(final String command,
-			final CommandContext context) {
+	private static void processCommand(final String command, final CommandContext context) {
 		String firstChunk = "";
 		String[] parameters = new String[0];
+		int flow = 0;
 		if (command.indexOf(" ") == -1)
 			firstChunk = command;
 		else {
 			try {
-				parameters = parseCommandLine(command.substring(
-						command.indexOf(" ")).trim());
+				parameters = parseCommandLine(command.substring(command.indexOf(" ")).trim());
 			} catch (final CommandParsingException e) {
-				context.write(ClicMessages.COMMAND_PARSING_ERROR.value(e
-						.getMessage()));
-				Activator
-						.sendErrorToErrorLog(ClicMessages.COMMAND_PARSING_ERROR
-								.value(e.getMessage()), e);
+				context.write(ClicMessages.COMMAND_PARSING_ERROR.value(e.getMessage()));
+				Activator.sendErrorToErrorLog(ClicMessages.COMMAND_PARSING_ERROR.value(e.getMessage()), e);
 				return;
 			}
 			firstChunk = command.substring(0, command.indexOf(" "));
 		}
 
-		final AbstractCommand commandImplementation = CommandRegistry
-				.getInstance().createCommand(firstChunk);
+		for (CommandFlowWrapper cmdfw : CommandRegistry.getInstance().getCommandFlow()) {
+			if (cmdfw.getName().equals(firstChunk)) {
+				for (String cmdRef : cmdfw.getCommandRefList()) {
+					firstChunk = cmdRef;
+					lunchCmd(firstChunk, parameters, command, context);
+					flow = 1;
+				}
+			} 
+
+		}
+		if(flow == 0) {
+			lunchCmd(firstChunk, parameters, command, context);
+		}
+		
+
+	}
+
+	static void lunchCmd(String firstChunk, String[] parameters, String command, CommandContext context) {
+		final AbstractCommand commandImplementation = CommandRegistry.getInstance().createCommand(firstChunk);
 		if (commandImplementation != null) {
 			try {
 				computeParameters(commandImplementation, context, parameters);
 			} catch (final OptionException e) {
-				context.write(ClicMessages.COMMAND_PARSING_ERROR.value(e
-						.getMessage()));
-				Activator
-						.sendErrorToErrorLog(ClicMessages.COMMAND_PARSING_ERROR
-								.value(e.getMessage()), e);
+				context.write(ClicMessages.COMMAND_PARSING_ERROR.value(e.getMessage()));
+				Activator.sendErrorToErrorLog(ClicMessages.COMMAND_PARSING_ERROR.value(e.getMessage()), e);
 				return;
 			}
 			commandImplementation.execute(context);
@@ -160,9 +170,7 @@ public class CommandProcessor extends Job {
 	 * 
 	 * @see AbstractCommand#parse(String[])
 	 */
-	private static void computeParameters(
-			final AbstractCommand commandImplementation,
-			final CommandContext context, final String[] parameters) {
+	private static void computeParameters(final AbstractCommand commandImplementation, final CommandContext context, final String[] parameters) {
 		commandImplementation.parse(parameters);
 	}
 
@@ -179,8 +187,7 @@ public class CommandProcessor extends Job {
 	 * 
 	 * @throws CommandParsingException
 	 */
-	private static String[] parseCommandLine(final String toProcess)
-			throws CommandParsingException {
+	private static String[] parseCommandLine(final String toProcess) throws CommandParsingException {
 		if (toProcess == null || toProcess.length() == 0)
 			// no command? no string
 			return new String[0];
@@ -188,8 +195,7 @@ public class CommandProcessor extends Job {
 		final int inQuote = 1;
 		final int inDoubleQuote = 2;
 		int state = normal;
-		final StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ",
-				true);
+		final StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ", true);
 		final ArrayList<String> result = new ArrayList<String>();
 		final StringBuilder current = new StringBuilder();
 		boolean lastTokenHasBeenQuoted = false;
@@ -230,8 +236,7 @@ public class CommandProcessor extends Job {
 		if (lastTokenHasBeenQuoted || current.length() != 0)
 			result.add(current.toString());
 		if (state == inQuote || state == inDoubleQuote)
-			throw new CommandParsingException(
-					ClicMessages.PARSER_UNBALANCED_QUOTES.value(toProcess));
+			throw new CommandParsingException(ClicMessages.PARSER_UNBALANCED_QUOTES.value(toProcess));
 		return result.toArray(new String[result.size()]);
 	}
 

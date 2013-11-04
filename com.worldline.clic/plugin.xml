@@ -24,6 +24,34 @@
             id="help"
             implementation="com.worldline.clic.internal.commands.impl.HelpCommand">
       </command>
+      <command
+            description="command test"
+            id="pre"
+            implementation="com.worldline.clic.internal.commands.impl.CommandTest">
+      </command>
+      <command
+            description="Displays the list of the available commands Flow"
+            id="listFlow"
+            implementation="com.worldline.clic.internal.commands.impl.ListCommandsCommandFlow">
+      </command>
+      <commandFlow
+            name="flow">
+         <commandRef
+               name="list">
+         </commandRef>
+         <commandRef
+               name="liste">
+         </commandRef>
+      </commandFlow>
+      <commandFlow
+            name="flowTest">
+         <commandRef
+               name="list">
+         </commandRef>
+         <commandRef
+               name="listFlow">
+         </commandRef>
+      </commandFlow>
    </extension>
    <extension
          point="org.eclipse.ui.console.consoleFactories">
