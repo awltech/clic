@@ -44,7 +44,7 @@ import joptsimple.OptionSet;
  * {@link #getParser()} are internal methods and shouldn't be overrided.
  * 
  * @author mvanbesien / aneveux
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class AbstractCommand {
@@ -136,5 +136,15 @@ public abstract class AbstractCommand {
 	 */
 	public OptionParser getParser() {
 		return parser;
+	}
+
+	/**
+	 * Simple getter for {@link #options}.
+	 * 
+	 * @return {@link #options}
+	 * @since 1.1
+	 */
+	public OptionSet getOptions() {
+		return options;
 	}
 }
