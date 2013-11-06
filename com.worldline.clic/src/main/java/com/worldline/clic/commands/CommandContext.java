@@ -23,7 +23,9 @@ package com.worldline.clic.commands;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.worldline.clic.internal.Activator;
@@ -35,7 +37,7 @@ import com.worldline.clic.internal.Activator;
  * execution.
  * 
  * @author mvanbesien / aneveux
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class CommandContext {
@@ -68,6 +70,17 @@ public class CommandContext {
 	 * any information in the execution's context.
 	 */
 	private final Map<String, Object> context = new HashMap<>();
+
+	/**
+	 * The {@link #outputs} of the context should be used if you want to store
+	 * some new parameters you'd like to provide to a command to be executed
+	 * after yours. You can write any arguments directly in this {@link List},
+	 * and it'll be internally used as new parameters for the following
+	 * commands.
+	 * 
+	 * @since 1.1
+	 */
+	private final List<String> outputs = new ArrayList<String>();
 
 	/**
 	 * This {@link #getScope()} function allows to get the execution's context
@@ -145,6 +158,42 @@ public class CommandContext {
 	 */
 	public Writer getWriter() {
 		return writer;
+	}
+
+	/**
+	 * Allows to add a new parameter in the outputs of the actual command in
+	 * order to be used and injected to the next command to be executed in a
+	 * flow.
+	 * 
+	 * @param s
+	 *            a new parameter you'd like to inject in the next command to be
+	 *            executed
+	 * @since 1.1
+	 */
+	public void addOutput(final String s) {
+		outputs.add(s);
+	}
+
+	/**
+	 * Allows to clear the {@link #outputs} of the current context
+	 * 
+	 * @since 1.1
+	 */
+	public void clearOutputs() {
+		outputs.clear();
+	}
+
+	/**
+	 * Allows to get the {@link #outputs} which have been defined during the
+	 * execution of a command in order to prepare the arguments of the next
+	 * command
+	 * 
+	 * @return {@link #outputs} which is a {@link List} of {@link String}
+	 *         corresponding to new commands arguments
+	 * @since 1.1
+	 */
+	public List<String> getOutputs() {
+		return outputs;
 	}
 
 }
