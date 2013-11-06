@@ -1,0 +1,97 @@
+---
+layout: default
+title: CLiC - Documentation
+---
+
+<div class="page-header">
+	<h1>Documentation</h1>
+</div>
+
+<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> This documentation aims at presenting how to contribute your own commands in CLiC. If you just want to use CLiC, please have a look at <a href="getting-started.html" class="alert-link">this documentation</a>.</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Creating a CLiC plugin project's structure</h3>
+	</div>
+	<div class="panel-body">
+		<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"></span> <strong>Warning:</strong> In order to develop new CLiC plugins, we'll illustrate everything with Maven, so we'll assume that you already installed it on your computer and configured it properly. If that's not the case, <a href="http://maven.apache.org/" target="_blank" class="alert-link">please consider installing Maven before anything</a>.</div>
+		<p>As you may know, CLiC consists in a set of Eclipse plugins. Its extensibility relies on a common Eclipse mechanism called <em>Extension Points</em>, so in order to contribute new commands in CLiC, you'll have to develop some new Eclipse plugins.</p>
+		<p>The aim of this documentation isn't to explain how to develop Eclipse plugins, or how they should be organized, packaged, etc. But we'll assume that you actually never developed any kind of Eclipse plugins, and teach you all the steps to reach in order to contribute a new command in CLiC.</p>
+		<p>Actually, we'll rely for this on another project we contributed: <a href="https://github.com/awltech/clic-archetype" target="_blank">clic-archetype</a>. This project actually consists in a Maven archetype allowing to create the complete project structure to be used in order to develop your Eclipse plugin. Icing on the cake, all the default configuration to be used in order to package this plugin is already managed in the archetype, so you'll have something completely working out of the box.</p>
+		<h4>0. Installing the archetype</h4>
+		<p>First of all, you'll have to retrieve the archetype locally: <code>git clone git@github.com:awltech/clic-archetype.git</code>. Then, simply install this archetype in your local Maven repository: <code>cd clic-archetype; mvn clean install</code>.</p>
+		<h4>1. Invoking the archetype</h4>
+		<p>After this first step, you just need to invoke the archetype where you want to create the project (in your workspace, for example). Here's how to do it from a command-line: <code>mvn archetype:create -DgroupId=com.sample -DartifactId=demo -Dversion=1.0 -DarchetypeGroupId=com.worldline.clic -DarchetypeArtifactId=clic-archetype</code></p>
+		<p>For sure, you'll have to replace the <code>groupId</code>, <code>artifactId</code>, and <code>version</code> values by those corresponding to your project.</p>
+		<p>If you don't want to type long command-lines, you can also use the interactive way of creating projects with Maven archetypes by simply typing <code>mvn archetype:generate</code> and then following the instructions on the screen. Basically, it'll ask you to type the number of the archetype which will be displayed in a list, and then give the required inputs in order to create the project.</p>
+		<p>Finally, it's also possible to create the Maven project directly from Eclipse, as soon as you installed <a href="http://www.eclipse.org/m2e/" target="_blank">m2e plugins</a> in your Eclipse instance. For this, simply go to <strong>File > New > Other... > Maven Project</strong> and select <em>clic-archetype</em> from the list which is displayed:</p>
+		<p><center><img src="resources/archetype.png" alt="CLiC Archetype"/></center></p>
+		<p>Then, simply fulfill the form asking for your project's references and click on <strong>Finish</strong> so your project will be created:</p>
+		<p><center><img src="resources/archetype2.png" alt="CLiC Archetype"/></center></p>
+		<h4>2. Already done!</h4>
+		<p>That's all! At this point, you already created the whole project's structure, and an example of a command is provided in the archetype. In your Eclipse workspace, you'll have something like this created:</p>
+		<p><center><img src="resources/workspace.png" alt="Eclipse Workspace"/></center></p>
+		<p>The only project you'll have to care about is the Eclipse plugin one (not containing feature or repository in its name). The other projects are created in order to deal with packaging purpose. In the next part of the documentation, we'll see together how to modify the example command, and how to contribute new commands in your plugin.</p>
+		<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"></span> <strong>Warning:</strong> We're using Tycho in order to deal with Eclipse plugins and Maven integration, and it requires a particular way of dealing with version numbers. This is already covered by the archetype, but you mustn't use the classical <em>-SNAPSHOT</em> qualifier in the version you'll provide to the archetype. Please provide the version as a simple <em>major.minor.micro</em> format.</div>
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Registering a new command in CLiC</h3>
+	</div>
+	<div class="panel-body">
+		<p>As presented before, your command is completely configured in the Eclise plugin which has been created. Actually, the plugin will contain the logical implementation of your command, while the registration to CLiC engine will be held by Eclipse's extension point mechanism. To do so, we'll have to complete the <code>plugin.xml</code> file. Here's the content of the example provided in the archetype in order to illustrate what's required:</p>
+		<p>
+			{% gist 7321921 %}
+		</p>
+		<p>As this snippet illustrates, we're using the <code>com.worldline.clic.commands</code> extension point. Using it, we can define as many commands as we want using this <code>&lt;command&gt;</code> tag. What's interesting is that we only need to provide 3 information for registering a command: 
+			<ul>
+				<li>an <strong>id</strong>, which is actually the keyword that will be used by CLiC in order to invoke your command (so if you want the user to be able to type <code>toto -some params</code>, the id you should specify is <code>toto</code>).</li>
+				<li>a <strong>description</strong> which will be used in order to display some information and help about your command. Basically, it'll be used while invoking the <code>list</code> and <code>help</code> commands.</li>
+				<li>an <strong>implementation</strong> which is a reference to a class from your plugin containing the actual implementation of what your command does.</li>
+			</ul>
+		</p>
+		<p>And that's all! Your command is now registered in CLiC and can be invoked as soon as someone will install your plugin! Nevertheless, please consider that the provided class should actually extend some internal class from CLiC, which will be illustrated in the next part of the documentation.</p>
+		<p>Please notice that it's also possible to define all of these information directly from Eclipse's plugin editor, which allows to have a graphical interface for this, and some hints about the values to be provided, as illustrated on this picture:</p>
+		<p><center><img src="resources/plugin.png" alt="Plugin editor"/></center></p>
+		<p>Using this editor, you can both specify to use the extension point by clicking on the <strong>Add...</strong> button, and selecting the extension point you'd like to use ; and also define new commands in the extension point by right clicking on it, allowing to get information on what's available for creation in CLiC:</p>
+		<p><center><img src="resources/plugin2.png" alt="Plugin editor"/></center></p>
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Implementing your command</h3>
+	</div>
+	<div class="panel-body">
+		<p>As presented in the previous part of the documentation, the only remaining part of integrating a new command is the actual implementation. You already know that you'll need to implement a specific class which is specified in the extension point, but let's have a look at the details.</p>
+		<p>Actually, your implementation should just extend the <code>com.worldline.clic.commands.AbstractCommand</code> provided by CLiC framework. This <code>AbstractCommand</code> being an abstract class, you'll have to implement two different methods in your own class in order to make it compile: <code>configureParser()</code> and <code>execute(final CommandContext context)</code>. Let's have a closer look at both methods:</p>
+		<h4>0. Configuring the parser</h4>
+		<p>After defining your command, you'll have to specify all the parameters which are available for your command. For this, CLiC is internally relying on <a href="http://pholser.github.io/jopt-simple/index.html" target="_blank">jopt-simple</a>, a famous Java framework for command-line parsing. In this method, you have access to a <code>joptsimple.OptionParser</code> object named <code>parser</code>.</p>
+		<p>The goal of this <code>configureParser()</code> function is (obviously) to configure this parser object in order to define all the parameters and options that could be used by the command you're defining. For this, please have a look at <a href="http://pholser.github.io/jopt-simple/examples.html" target="_blank">this very detailed documentation of jopt-simple</a>, which actually contains all the features you could use in order to define your parameters.</p>
+		<p>Please keep in mind that using jopt-simple, you'll be able to define some validation on the provided parameters, conversions in types you need, etc.</p>
+		<h4>1. Implementing the logical behavior of your command</h4>
+		<p>The second method you'll have to complete is the <code>execute(final CommandContext context)</code> method. It allows you to write the Java source code which will be executed while invoking your command. During the execution, you'll have access to two different important objects:</p>
+		<p>First of all, and in order to retrieve all the parameters which have been provided by the user, you'll be able to use a <code>joptsimple.OptionSet</code> object, named <code>options</code> which is computed by jopt-simple. You'll have information about how to use it from <a href="http://pholser.github.io/jopt-simple/examples.html" target="_blank">the same documentation of jopt-simple</a>.</p>
+		<p>Then, you'll be able to use the <code>com.worldline.clic.commands.CommandContext</code> object which is provided as a parameter of the <code>execute(final CommandContext context)</code> method. Using this context, you'll be able to send feedbacks about the execution to the end user thanks to the <code>context.write(String)</code> method. Please take in consideration that the context can also be used in order to store some data that you'd like to send to some other location (the context actually contains some kind of a Map which allows you to store data as a key-&gt;value mechanism). But anyway, the most important thing you should use is this <code>write(String)</code> method allowing to write on the output console.</p>
+		<h4>2. Example of an implementation</h4>
+		<p>Just as a small illustration of a command implementation, here's the source code you'll find in the archetype as an example:</p>
+		<p>
+			{% gist 7333539 %}
+		</p>
+		<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> Notice that in the provided example we're using a i18n mechanism in order to retrieve the message to be displayed, this mechanism is provided in the archetype, so feel free to use it ;)</div>
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Packaging and sharing your plugin</h3>
+	</div>
+	<div class="panel-body">
+		<p>Being an Eclipse plugin, your CLiC plugin will lead to some constraints in order to be packaged. Indeed you won't be able to create a simple jar in order to share it (or at least you could, but it won't be really effective), and you'll have to generate an Eclipse update site... But don't worry! The archetype already manages this for you.</p>
+		<p>In the archetype, we're providing a complete configuration of <a href="http://eclipse.org/tycho/" target="_blank">Tycho</a> which allows to simply build Eclipse plugins from Maven. So the only thing you'll have to do is to execute from the root project of your plugin (which contains the plugin, feature and repository projects) this Maven command: <code>mvn clean package</code>. That's all.</p>
+		<p>After launching this simple Maven command, you can have a look at the <code>target/</code> folder located in the repository project, which will contain the update site that you can deploy. Your update site will be present both as a zip file, and a folder named <code>repository</code>. You can now use this update site in order to install your plugin in Eclipse, and share it with your colleagues.</p>
+		<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> We recommend that you host this repository somewhere on a http server so you can share it's URL across your team, and even with us so we can promote your plugin!</div>
+	</div>
+</div>

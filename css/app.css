@@ -3,3 +3,9 @@ body {
 	height: 100%;
 	padding-top: 70px;
 }
+
+footer {
+	margin: 20px;
+	font-size: 11px;
+	text-align: right;
+}

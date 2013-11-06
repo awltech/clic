@@ -1,0 +1,39 @@
+---
+layout: default
+title: CLiC - Developers
+---
+
+<div class="page-header">
+	<h1>Developers</h1>
+</div>
+
+<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> This documentation is intended for people wanting to contribute to CLiC core engine. If you just want to develop new CLiC plugins, please have a look at <a href="documentation.html" class="alert-link">this documentation</a>.</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Updating the source header</h3>
+	</div>
+	<div class="panel-body">
+		<p>CLiC being an open-source application, we need to add a header refering to the license on top of each source file. To do so, we're using a Maven plugin, and here's how to update the header on top of each file of CLiC project: from the root project of CLiC, simply execute this Maven command: <code>mvn clean license:format</code>.</p>
+		<p>Yep, that's all!</p>
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Development good practices guidance</h3>
+	</div>
+	<div class="panel-body">
+		<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> This part of the documentation is far to be complete and aims at containing all the rules that should be followed while writing some source code for CLiC.</div>
+		<p>Here are a few basic rules that should be followed while committing some source code in CLiC:
+			<ul>
+				<li>Any commited source code should compile,</li>
+				<li>Any commited source code should be tested and work efficiently,</li>
+				<li>Any commited source code should be documented using javadoc,</li>
+				<li>Any commit should have a clear message commit explaining the aim of the contribution,</li>
+				<li>Only one issue should be resolved per commit,</li>
+				<li>All the source code should be formatted using Eclipse's default formatter,</li>
+				<li>No Eclipse warnings should be found in the source code,</li>
+			</ul></p>
+		</div>
+	</div>
