@@ -56,7 +56,6 @@ import com.worldline.clic.internal.ClicMessages;
  * @see AbstractCommand
  */
 public class CommandProcessor extends Job {
-	public List<String> paramList = new ArrayList<>();
 	/**
 	 * {@link #commandChain} is a {@link String} containing the exact command
 	 * which has been provided by the end-user
@@ -108,7 +107,8 @@ public class CommandProcessor extends Job {
 	private static void processCommand(final String command, final CommandContext context) {
 		String firstChunk = "";
 		String[] parameters = new String[0];
-		int flow = 0;
+		boolean flow = false;
+		context.clearOutputs();
 		if (command.indexOf(" ") == -1)
 			firstChunk = command;
 		else {
@@ -122,24 +122,32 @@ public class CommandProcessor extends Job {
 			firstChunk = command.substring(0, command.indexOf(" "));
 		}
 
-		for (CommandFlowWrapper cmdfw : CommandRegistry.getInstance().getCommandFlow()) {
-			if (cmdfw.getName().equals(firstChunk)) {
-				for (String cmdRef : cmdfw.getCommandRefList()) {
-					firstChunk = cmdRef;
-					lunchCmd(firstChunk, parameters, command, context);
-					flow = 1;
+		for (CommandFlowWrapper commandFlow : CommandRegistry.getInstance().getCommandFlow()) {
+			if (commandFlow.getName().equals(firstChunk)) {
+				for (String commandRef : commandFlow.getCommandRefList()) {
+					firstChunk = commandRef;
+					if (flow == true) {
+						List<String> contextOutputsList = context.getOutputs();
+						int i = 0;
+						parameters = new String[contextOutputsList.size()];
+						for (String contextOutputs : contextOutputsList) {
+							parameters[i] = contextOutputs;
+							i++;
+						}
+					}
+					launchCommand(firstChunk, parameters, command, context);
+					flow = true;
 				}
-			} 
+			}
 
 		}
-		if(flow == 0) {
-			lunchCmd(firstChunk, parameters, command, context);
+		if (flow == false) {
+			launchCommand(firstChunk, parameters, command, context);
 		}
-		
 
 	}
 
-	static void lunchCmd(String firstChunk, String[] parameters, String command, CommandContext context) {
+	static void launchCommand(String firstChunk, String[] parameters, String command, CommandContext context) {
 		final AbstractCommand commandImplementation = CommandRegistry.getInstance().createCommand(firstChunk);
 		if (commandImplementation != null) {
 			try {
