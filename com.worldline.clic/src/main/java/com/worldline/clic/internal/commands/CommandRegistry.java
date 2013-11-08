@@ -22,7 +22,6 @@
 package com.worldline.clic.internal.commands;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -80,10 +79,13 @@ public class CommandRegistry {
 	 */
 	private void loadExtensionPoint() {
 		commands.clear();
-		
-		commandFlowCollection.clear();
+		flows.clear();
+
 		final IExtensionPoint extension = Platform.getExtensionRegistry()
 				.getExtensionPoint(Activator.PLUGIN_ID, "commands");
+
+		// Loading commands & command flows
+
 		for (final IConfigurationElement element : extension
 				.getConfigurationElements()) {
 			if ("command".equals(element.getName())) {
@@ -91,19 +93,17 @@ public class CommandRegistry {
 				final String description = element.getAttribute("description");
 				commands.put(id, new CommandWrapper(id, description, element));
 			}
-			if ("commandFlow".equals(element.getName())) {
-				commandRefList.clear();
+			if ("flow".equals(element.getName())) {
+				final List<String> commandReferences = new ArrayList<String>();
 				final String name = element.getAttribute("name");
-				for (IConfigurationElement subElement : element.getChildren()) {
-					if ("commandRef".equals(subElement.getName())) {
-						final String nameRef = subElement.getAttribute("name");
-						commandRefList.add(nameRef);
-					}
-				}
-				CommandFlowWrapper commandFlow = new CommandFlowWrapper(name, commandRefList);
-				this.commandFlowCollection.add(commandFlow);
+				for (final IConfigurationElement subElement : element
+						.getChildren())
+					if ("commandReference".equals(subElement.getName()))
+						commandReferences.add(subElement.getAttribute("name"));
+				final CommandFlowWrapper commandFlow = new CommandFlowWrapper(
+						name, commandReferences);
+				flows.put(name, commandFlow);
 			}
-			
 		}
 	}
 
@@ -115,17 +115,24 @@ public class CommandRegistry {
 	 * actually build the command.
 	 */
 	private final Map<String, CommandWrapper> commands = new HashMap<String, CommandWrapper>();
-	
-	//private final Map<String, CommandFlowWrapper> commandsFlow = new HashMap<String, CommandFlowWrapper>();
-	
-	public final List<String> commandRefList = new ArrayList<>();
-	
-	public Collection <CommandFlowWrapper> getCommandFlow() {
-		return commandFlowCollection;
+
+	/**
+	 * This {@link Map} allows to store all the flows which have been
+	 * contributed through the extension point. The {@link Map} actually links
+	 * the flow's name to its associated {@link CommandFlowWrapper}.
+	 */
+	private final Map<String, CommandFlowWrapper> flows = new HashMap<String, CommandFlowWrapper>();
+
+	/**
+	 * Allows to retrieve all the flows which have been contributed from the
+	 * extension point
+	 * 
+	 * @return {@link #flows} all the flows defined in the extension point
+	 */
+	public Map<String, CommandFlowWrapper> getFlows() {
+		return flows;
 	}
-	
-	private Collection<CommandFlowWrapper> commandFlowCollection = new ArrayList<CommandFlowWrapper>();
-	
+
 	/**
 	 * Allows to get the singleton instance in order to query for some
 	 * information about commands

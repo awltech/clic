@@ -61,10 +61,10 @@ public class ListFlowsCommand extends AbstractCommand {
 	 */
 	@Override
 	public void execute(final CommandContext context) {
-		final Collection<CommandFlowWrapper> cmdList = CommandRegistry
-				.getInstance().getCommandFlow();
-		for (final CommandFlowWrapper cmdFlow : cmdList)
-			context.write(cmdFlow.getName() + " - [ COMMAND FLOW ]");
+		final Collection<CommandFlowWrapper> flows = CommandRegistry
+				.getInstance().getFlows().values();
+		for (final CommandFlowWrapper flow : flows)
+			context.write(flow.toString());
 	}
 
 }

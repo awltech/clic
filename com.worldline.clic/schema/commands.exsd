@@ -19,7 +19,7 @@
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="command"/>
-            <element ref="commandFlow" minOccurs="0" maxOccurs="1"/>
+            <element ref="flow" minOccurs="0" maxOccurs="1"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -77,10 +77,10 @@
       </complexType>
    </element>
 
-   <element name="commandFlow">
+   <element name="flow">
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="commandRef"/>
+            <element ref="commandReference"/>
          </sequence>
          <attribute name="name" type="string" use="required">
             <annotation>
@@ -92,7 +92,7 @@
       </complexType>
    </element>
 
-   <element name="commandRef">
+   <element name="commandReference">
       <complexType>
          <attribute name="name" type="string" use="required">
             <annotation>
