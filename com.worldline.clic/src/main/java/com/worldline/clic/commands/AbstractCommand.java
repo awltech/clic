@@ -124,7 +124,7 @@ public abstract class AbstractCommand {
 	 *            be used by your command. This array of {@link String} will be
 	 *            computed by the {@link #parser}
 	 */
-	public void parse(final String[] args) {
+	public final void parse(final String[] args) {
 		options = parser.parse(args);
 	}
 
@@ -134,7 +134,7 @@ public abstract class AbstractCommand {
 	 * 
 	 * @return {@link #parser}
 	 */
-	public OptionParser getParser() {
+	public final OptionParser getParser() {
 		return parser;
 	}
 
@@ -144,7 +144,7 @@ public abstract class AbstractCommand {
 	 * @return {@link #options}
 	 * @since 1.1
 	 */
-	public OptionSet getOptions() {
+	public final OptionSet getOptions() {
 		return options;
 	}
 }
