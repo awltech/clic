@@ -9,3 +9,10 @@ footer {
 	font-size: 11px;
 	text-align: right;
 }
+
+#scrolltop {
+	position: fixed;
+	bottom:50px;
+	right: 5px;
+	text-align: right;
+}

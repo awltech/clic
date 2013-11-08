@@ -26,7 +26,7 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
       <![endif]-->
     </head>
-    <body>
+    <body id="top">
 
       <!-- Fixed navbar -->
       <div class="navbar navbar-default navbar-fixed-top">
@@ -60,6 +60,8 @@
         {{content}}
       </div>
 
+      <div id="scrolltop"><a href="#top"><img src="{{ site.baseurl}}/img/up.png" alt="top" /></a></div>
+
       <footer>
       <a href="{{ site.baseurl}}/index.html">CLiC</a> is a framework produced by <a href="https://github.com/awltech">AWLTech</a> licensed under <a href="http://www.gnu.org/licenses/lgpl-2.1.txt">LGPL</a>.
       </footer>
@@ -68,5 +70,6 @@
       <script src="https://code.jquery.com/jquery.js"></script>
       <!-- Include all compiled plugins (below), or include individual files as needed -->
       <script src="{{ site.baseurl}}/js/bootstrap.min.js"></script>
+      <script src="{{ site.baseurl}}/js/scroll.js"></script>
     </body>
     </html>
