@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CLiC Generic Maven Plugin
+Bundle-SymbolicName: com.worldline.clic.mvn;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Activator: com.worldline.clic.mvn.Activator
+Bundle-Vendor: Worldline
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.worldline.clic;bundle-version="0.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/maven-invoker-2.1.1.jar,
+ .,
+ lib/plexus-utils-3.0.jar

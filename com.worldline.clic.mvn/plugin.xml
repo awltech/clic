@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.worldline.clic.commands">
+      <command
+            description="Executes a task embedded in Maven"
+            id="clic:mvn"
+            implementation="com.worldline.clic.mvn.commands.MavenCommand">
+      </command>
+   </extension>
+
+</plugin>
