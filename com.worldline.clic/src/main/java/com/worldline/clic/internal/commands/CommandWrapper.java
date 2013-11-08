@@ -98,6 +98,7 @@ public class CommandWrapper {
 		try {
 			final AbstractCommand cmd = (AbstractCommand) element
 					.createExecutableExtension("implementation");
+			cmd.getParser().allowsUnrecognizedOptions();
 			cmd.configureParser();
 			return cmd;
 		} catch (final CoreException e) {
