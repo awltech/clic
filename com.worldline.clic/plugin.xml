@@ -26,8 +26,8 @@
       </command>
       <command
             description="Displays the list of the available commands Flow"
-            id="listFlow"
-            implementation="com.worldline.clic.internal.commands.impl.ListCommandsCommandFlow">
+            id="list:flows"
+            implementation="com.worldline.clic.internal.commands.impl.ListFlowsCommand">
       </command>
    </extension>
    <extension

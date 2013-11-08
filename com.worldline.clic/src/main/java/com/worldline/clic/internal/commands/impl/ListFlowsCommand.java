@@ -29,10 +29,10 @@ import com.worldline.clic.internal.commands.CommandFlowWrapper;
 import com.worldline.clic.internal.commands.CommandRegistry;
 
 /**
- * The {@link ListCommandsCommandFlow} is an internal implementation of an
+ * The {@link ListFlowsCommand} is an internal implementation of an
  * {@link AbstractCommand} to be used by the user in order to get the list of
- * all the available commands flow in CLiC. The list of all commands flow will be
- * displayed directly in the console.
+ * all the available commands flow in CLiC. The list of all commands flow will
+ * be displayed directly in the console.
  * 
  * The command will internally rely on the all the commands flow which has been
  * defined in the extension point, so any command flow registered through the
@@ -45,7 +45,7 @@ import com.worldline.clic.internal.commands.CommandRegistry;
  * @see AbstractCommand
  */
 
-public class ListCommandsCommandFlow extends AbstractCommand {
+public class ListFlowsCommand extends AbstractCommand {
 
 	/**
 	 * We don't define anything related to the parser since this command doesn't
@@ -59,13 +59,12 @@ public class ListCommandsCommandFlow extends AbstractCommand {
 	 * This command will use the {@link CommandRegistry} in order to get all the
 	 * registered commands flow and display them on the console.
 	 */
-	
 	@Override
-	public void execute(CommandContext context) {
-		final Collection<CommandFlowWrapper> cmdList = CommandRegistry.getInstance().getCommandFlow();
-		for (CommandFlowWrapper cmdFlow : cmdList) {
-			context.write(cmdFlow.getName()+" - [ COMMAND FLOW ]");
-		}
+	public void execute(final CommandContext context) {
+		final Collection<CommandFlowWrapper> cmdList = CommandRegistry
+				.getInstance().getCommandFlow();
+		for (final CommandFlowWrapper cmdFlow : cmdList)
+			context.write(cmdFlow.getName() + " - [ COMMAND FLOW ]");
 	}
 
 }
