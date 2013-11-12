@@ -22,12 +22,14 @@
 package com.worldline.clic.internal.commands.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import com.worldline.clic.commands.AbstractCommand;
 import com.worldline.clic.commands.CommandContext;
+import com.worldline.clic.internal.commands.CommandFlowWrapper;
 import com.worldline.clic.internal.commands.CommandRegistry;
 
 /**
@@ -67,10 +69,18 @@ public class ListCommandsCommand extends AbstractCommand {
 		final List<String> sortedCommandsList = new ArrayList<String>(
 				commandsList);
 		Collections.sort(sortedCommandsList);
-
+		context.write("");
 		for (final String commandId : sortedCommandsList)
 			context.write(String.format("%s - %s", commandId, CommandRegistry
 					.getInstance().getCommandDescription(commandId)));
+		
+		
+		context.write("");
+		context.write("Command Flow:");
+		final Collection<CommandFlowWrapper> flows = CommandRegistry
+				.getInstance().getFlows().values();
+		for (final CommandFlowWrapper flow : flows)
+			context.write(flow.toString());
 	}
 
 }

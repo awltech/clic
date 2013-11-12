@@ -65,9 +65,8 @@ public class HelpCommand extends AbstractCommand {
 	 */
 	@Override
 	public void configureParser() {
-		command = parser.accepts("command").withRequiredArg()
-				.ofType(String.class).describedAs("command").required();
-		
+		command = parser.accepts("command").withRequiredArg().ofType(String.class).describedAs("command");
+
 	}
 
 	/**
@@ -79,24 +78,30 @@ public class HelpCommand extends AbstractCommand {
 	 */
 	@Override
 	public void execute(final CommandContext context) {
-		final AbstractCommand createdCommand = CommandRegistry.getInstance()
-				.createCommand(options.valueOf(command));
+		final AbstractCommand createdCommand = CommandRegistry.getInstance().createCommand(options.valueOf(command));
 		if (createdCommand == null) {
-			context.write(ClicMessages.COMMAND_NOT_FOUND.value(options
-					.valueOf(command)));
+			final AbstractCommand createdCommandDefault = CommandRegistry.getInstance().createCommand("help");
+			//context.write(ClicMessages.COMMAND_NOT_FOUND.value(options.valueOf(command)));
+
+			context.write(ClicMessages.COMMAND_HELP.value("help", CommandRegistry.getInstance().getCommandDescription("help")));
+			try {
+				createdCommandDefault.getParser().printHelpOn(context.getWriter());
+			} catch (final IOException e) {
+				context.write(ClicMessages.COMMAND_EXECUTION_ERROR.value(e.getMessage()));
+
+				Activator.sendErrorToErrorLog(ClicMessages.COMMAND_EXECUTION_ERROR.value(e.getMessage()), e);
+			}
+
 			return;
 		}
 		try {
-			context.write(ClicMessages.COMMAND_HELP.value(options
-					.valueOf(command), CommandRegistry.getInstance()
-					.getCommandDescription(options.valueOf(command))));
+			context.write(ClicMessages.COMMAND_HELP.value(options.valueOf(command),
+					CommandRegistry.getInstance().getCommandDescription(options.valueOf(command))));
 			createdCommand.getParser().printHelpOn(context.getWriter());
 		} catch (final IOException e) {
-			context.write(ClicMessages.COMMAND_EXECUTION_ERROR.value(e
-					.getMessage()));
-			Activator.sendErrorToErrorLog(
-					ClicMessages.COMMAND_EXECUTION_ERROR.value(e.getMessage()),
-					e);
+			context.write(ClicMessages.COMMAND_EXECUTION_ERROR.value(e.getMessage()));
+
+			Activator.sendErrorToErrorLog(ClicMessages.COMMAND_EXECUTION_ERROR.value(e.getMessage()), e);
 		}
 	}
 
