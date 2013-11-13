@@ -25,10 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
 import com.worldline.clic.commands.AbstractCommand;
 import com.worldline.clic.commands.CommandContext;
+import com.worldline.clic.internal.ClicMessages;
 import com.worldline.clic.internal.commands.CommandFlowWrapper;
 import com.worldline.clic.internal.commands.CommandRegistry;
 
@@ -64,19 +63,14 @@ public class ListCommandsCommand extends AbstractCommand {
 	 */
 	@Override
 	public void execute(final CommandContext context) {
-		final Set<String> commandsList = CommandRegistry.getInstance()
-				.getCommandsList();
 		final List<String> sortedCommandsList = new ArrayList<String>(
-				commandsList);
+				CommandRegistry.getInstance().getCommandsList());
 		Collections.sort(sortedCommandsList);
-		context.write("");
 		for (final String commandId : sortedCommandsList)
 			context.write(String.format("%s - %s", commandId, CommandRegistry
 					.getInstance().getCommandDescription(commandId)));
-		
-		
-		context.write("");
-		context.write("Command Flow:");
+		// Displaying flows
+		context.write(ClicMessages.COMMAND_FLOWS.value());
 		final Collection<CommandFlowWrapper> flows = CommandRegistry
 				.getInstance().getFlows().values();
 		for (final CommandFlowWrapper flow : flows)
