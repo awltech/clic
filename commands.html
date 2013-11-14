@@ -18,7 +18,6 @@ title: CLiC - Commands
 			<ul>
 				<li><a href="#list">list</a></li>
 				<li><a href="#help">help</a></li>
-				<li><a href="#list-flows">list:flows</a></li>
 				<li><a href="#clic-mvn">clic:mvn</a></li>
 			</ul>
 		</p>
@@ -34,85 +33,77 @@ title: CLiC - Commands
 	<div class="panel-body">
 		<p>This command is provided out of the box with CLiC framework and allows to get information about all the commands which are available in an Eclipse instance. It doesn't require any arguments, so you just have to type <code>list</code> in order to execute it. It'll display the names and descriptions of each available commands:</p>
 		<p><center><img src="resources/list.png" alt="list"/></center></p>
+		<p>Also, this command will be able to give you information about all the flows which are registered in your Eclipse instance.<p>
+		</div>
 	</div>
-</div>
 
-<span id="help"></span>
+	<span id="help"></span>
 
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">help</h3>
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">help</h3>
+		</div>
+		<div class="panel-body">
+			<p>This command is provided out of the box with CLiC framework and allows to get some detailed information about a particular command which is available in an Eclise instance. It requires 1 parameter, <code>command</code> which allows to specify the name of the command for which you need some help. So you can type something like: <code>help --command command-name</code>. It'll display some details about the specified command and the arguments which are needed:</p>
+			<p><center><img src="resources/help.png" alt="help"/></center></p>
+			<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> As you may saw from this example, it's possible to use short versions of the arguments to provide when there's no ambiguity on the arguments names, just like this <i>-co</i> instead of <i>-command</i>.</div>
+			<p>Please notice that if you don't specify any parameters for this command, and only execute <code>help</code>, then it'll display the help message for the command itself.</p>
+		</div>
 	</div>
-	<div class="panel-body">
-		<p>This command is provided out of the box with CLiC framework and allows to get some detailed information about a particular command which is available in an Eclise instance. It requires 1 parameter, <code>command</code> which allows to specify the name of the command for which you need some help. So you can type something like: <code>help --command command-name</code>. It'll display some details about the specified command and the arguments which are needed:</p>
-		<p><center><img src="resources/help.png" alt="help"/></center></p>
-		<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> As you may saw from this example, it's possible to use short versions of the arguments to provide when there's no ambiguity on the arguments names, just like this <i>-co</i> instead of <i>-command</i>.</div>
-	</div>
-</div>
 
-<span id="list-flows"></span>
+	<span id="clic-mvn"></span>
 
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">list:flows</h3>
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">clic:mvn</h3>
+		</div>
+		<div class="panel-body">
+			<p>This particular CLiC command allows to deal with any execution based on Maven. It aims at letting people define easily some tasks thanks to Maven plugins or Maven pom configurations and execute them through a CLiC plugin. In the case of Maven pom configuration, the plugin will be able to generate a temporary pom.xml file allowing to use the content defined in a parent pom. For this documentation, we'll take a concrete example in order to illustrate how this plugin can used. For this example, let's take into consideration a remote shell example: a Maven executable allowing to execute a command to a remote server using ssh.</p>
+			<h4>0. Creation of the Maven executable</h4>
+			<p>While creating a Maven executable to be used by CLiC, we always have two different choices: <strong>creating a complete Maven plugin</strong>, which allows to implement something to do or some interactions to perform, or <strong>write some configuration of an existing Maven plugin in a pom.xml file</strong>, which is really easy to do since you don't need any particular Maven knowledge. Let's take this second alternative as our example. If you need/want to write your own Maven plugin to cover your needs, maybe you can have a look at <a href="http://maven.apache.org/guides/plugin/guide-java-plugin-development.html" target="_blank">this documentation</a>.</p>
+			<p>In our case, and for a simple way of invoking ssh from an existing Maven plugin, we'll rely on the <a href="http://maven.apache.org/plugins/maven-antrun-plugin/" target="_blank">antrun</a> plugin which is available for Maven, and write a simple pom.xml file:</p>
+			<p>
+				{% gist 7434726 %}
+			</p>
+			<p>From this simple example, you see that we can specify really easily in a pom.xml everything we want: references to our executable thanks to the <code>groupId</code> and <code>artifactId</code>, but also a <code>version</code> so we can take the benefits of Maven versionning. Finally, we can plug the behavior wherever we want, behind a particular goal or phase, or anything.</p>
+			<p>Please notice that in this example, we're specifying a few variables that will need to be provided during the execution in order to keep our executable generic.</p>
+			<h4>1. Sharing the executable with my colleagues</h4>
+			<p>Depending if you want to share your executable or not, you can install it on Nexus, thanks to a Jenkins job for example. For this, you simply need to run a <code>mvn install</code> command, from your local environment if you want to use/test it locally, and from Jenkins in order to install it on Nexus and share it with your coworkers.</p>
+			<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> We're considering in this example that you're using the classical Jenkins/Nexus architecture in order to deal with Maven builds. Depending on your infrastructure's particularities, you may deploy to Nexus from your local environment, or use some other tools to proceed with the sharing step.</div>
+			<h4>2. Invoking your executable from the command line</h4>
+			<p>As soon as your executable has been installed somewhere (locally or on an accessible Nexus instance), you can invoke it easily from CLiC. For this, simply use the <code>clic:mvn</code> command with the following parameters:
+				<ul>
+					<li><code>--maven-reference</code>: allowing to specify the reference of the Maven executable you defined using the syntax <code>groupId:artifactId:version</code>, in our case it'll be <code>com.worldline.clic:example.remote-shell:1.0.0-SNAPSHOT</code>,</li>
+					<li><code>--generate-pom</code>: indicates that our Maven executable is just a configured pom.xml, so a temporary pom.xml needs to be generated locally in order to allow the execution of the plugin, <i>(do not use this option if you want to execute directly a Maven plugin)</i>,</li>
+					<li><code>--maven-command</code>: allows to specify the Maven command to be executed in order to reach the executable you defined, in our example, it'll be <code>antrun:run</code> as we're using the antrun plugin,</li>
+					<li>Any other parameters you'd like to send to Maven using the <code>-Dparam=value</code> syntax.</li>
+				</ul>
+			</p>
+			<p>Based on our example, and just for the illustration (do not reproduce this behavior because of obvious security issues), we could execute our remote-shell command thanks to CLiC using this kind of command:</p>
+			<p>
+				{% gist 7435682 %}
+			</p>
+			<p>And here it is! You just executed a remote shell command from CLiC using a simple Maven configuration. For sure, that's not the final result of what we want to do cause the command line is still pretty hard to write, but at least, we just illustrated that deploying executables from Maven is easy... And on top of that, we take the benefits of:
+				<ul>
+					<li>Maven automated downloading, when an executable is missing, Maven downloads it,</li>
+					<li>Maven versionning, allowing to deal with SNAPSHOTs, downloading the latest version, etc.</li>
+					<li>Maven ecosystem, allowing to use out of the box dozens of existing plugins that just need a few configuration,</li>
+					<li>And many more Maven advantages, such as profiles/settings/encryption and so on, already managed by Maven engine!</li>
+				</ul>
+			</p>
+			<h4>3. Default and/or shared configuration</h4>
+			<p>Another really nice feature that we can use from Maven is inheritance. As we're using Maven variables in order to obtain the different values we need to use, it's not mandatory for us to provide them from the command line, and we can simply create another pom.xml file, inheriting from the one we created initially in order to set up some values:</p>
+			<p>
+				{% gist 7435317 %}
+			</p>
+			<p>From this example, I just simply created a new pom defining a few values as <code>properties</code>. I can then simply install this pom locally thanks to <code>mvn install</code>, or share it with your colleagues thanks to a shared repository such as Nexus.</p>
+			<p>Finally, and because some values are already present in this configuration, I can invoke my Maven executable with the same type of commands, but without specifying all the default values:</p>
+			<p>
+				{% gist 7435709 %}
+			</p>
+			<p>Thanks to this new invokation (note that the <code>--maven-reference</code> has changed), I can invoke the same executable without specifying all the parameters. Moreover, if I shared this new pom.xml with some coworkers, they can invoke the same with a shared configuration! Icing on the cake, and thanks to Maven, this shared configuration is also versionned, and downloaded automatically when needed!</p>
+			<p>For more advanded usage, you can even think of using Maven profiles, Maven settings and their global parameters, etc.</p>
+			<h4>4. Industrialization of Maven commands</h4>
+			<p>Please note that thanks to the programmatic invocation of commands, it's possible, and really easy, to bring some industrialization while dealing with Maven commands execution. You can indeed write your own command which allows to generate a complete Maven command, and then execute it with your own parameters. Have a look at the <a href="documentation.html#programmatic-invokation">documentation</a> to see how to invoke commands programmatically ;)</p>
+		</div>
 	</div>
-	<div class="panel-body">
-		<p>This command is provided out of the box with CLiC framework and allows to get information about all the command flows which are available in an Eclipse instance. It doesn't require any arguments, so you just have to type <code>list:flows</code> in order to execute it. It'll display the names and descriptions of each available flows:</p>
-		<p><center><img src="resources/listflows.png" alt="list"/></center></p>
-	</div>
-</div>
-
-<span id="clic-mvn"></span>
-
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">clic:mvn</h3>
-	</div>
-	<div class="panel-body">
-		<p>This particular CLiC command allows to deal with any execution based on Maven. It aims at letting people define easily some tasks thanks to Maven plugins or Maven pom configurations and execute them through a CLiC plugin. In the case of Maven pom configuration, the plugin will be able to generate a temporary pom.xml file allowing to use the content defined in a parent pom. For this documentation, we'll take a concrete example in order to illustrate how this plugin can used. For this example, let's take into consideration a remote shell example: a Maven executable allowing to execute a command to a remote server using ssh.</p>
-		<h4>0. Creation of the Maven executable</h4>
-		<p>While creating a Maven executable to be used by CLiC, we always have two different choices: <strong>creating a complete Maven plugin</strong>, which allows to implement something to do or some interactions to perform, or <strong>write some configuration of an existing Maven plugin in a pom.xml file</strong>, which is really easy to do since you don't need any particular Maven knowledge. Let's take this second alternative as our example. If you need/want to write your own Maven plugin to cover your needs, maybe you can have a look at <a href="http://maven.apache.org/guides/plugin/guide-java-plugin-development.html" target="_blank">this documentation</a>.</p>
-		<p>In our case, and for a simple way of invoking ssh from an existing Maven plugin, we'll rely on the <a href="http://maven.apache.org/plugins/maven-antrun-plugin/" target="_blank">antrun</a> plugin which is available for Maven, and write a simple pom.xml file:</p>
-		<p>
-			{% gist 7434726 %}
-		</p>
-		<p>From this simple example, you see that we can specify really easily in a pom.xml everything we want: references to our executable thanks to the <code>groupId</code> and <code>artifactId</code>, but also a <code>version</code> so we can take the benefits of Maven versionning. Finally, we can plug the behavior wherever we want, behind a particular goal or phase, or anything.</p>
-		<p>Please notice that in this example, we're specifying a few variables that will need to be provided during the execution in order to keep our executable generic.</p>
-		<h4>1. Sharing the executable with my colleagues</h4>
-		<p>Depending if you want to share your executable or not, you can install it on Nexus, thanks to a Jenkins job for example. For this, you simply need to run a <code>mvn install</code> command, from your local environment if you want to use/test it locally, and from Jenkins in order to install it on Nexus and share it with your coworkers.</p>
-		<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> We're considering in this example that you're using the classical Jenkins/Nexus architecture in order to deal with Maven builds. Depending on your infrastructure's particularities, you may deploy to Nexus from your local environment, or use some other tools to proceed with the sharing step.</div>
-		<h4>2. Invoking your executable from the command line</h4>
-		<p>As soon as your executable has been installed somewhere (locally or on an accessible Nexus instance), you can invoke it easily from CLiC. For this, simply use the <code>clic:mvn</code> command with the following parameters:
-			<ul>
-				<li><code>--maven-reference</code>: allowing to specify the reference of the Maven executable you defined using the syntax <code>groupId:artifactId:version</code>, in our case it'll be <code>com.worldline.clic:example.remote-shell:1.0.0-SNAPSHOT</code>,</li>
-				<li><code>--generate-pom</code>: indicates that our Maven executable is just a configured pom.xml, so a temporary pom.xml needs to be generated locally in order to allow the execution of the plugin, <i>(do not use this option if you want to execute directly a Maven plugin)</i>,</li>
-				<li><code>--maven-command</code>: allows to specify the Maven command to be executed in order to reach the executable you defined, in our example, it'll be <code>antrun:run</code> as we're using the antrun plugin,</li>
-				<li>Any other parameters you'd like to send to Maven using the <code>-Dparam=value</code> syntax.</li>
-			</ul>
-		</p>
-		<p>Based on our example, and just for the illustration (do not reproduce this behavior because of obvious security issues), we could execute our remote-shell command thanks to CLiC using this kind of command:</p>
-		<p>
-			{% gist 7435682 %}
-		</p>
-		<p>And here it is! You just executed a remote shell command from CLiC using a simple Maven configuration. For sure, that's not the final result of what we want to do cause the command line is still pretty hard to write, but at least, we just illustrated that deploying executables from Maven is easy... And on top of that, we take the benefits of:
-			<ul>
-				<li>Maven automated downloading, when an executable is missing, Maven downloads it,</li>
-				<li>Maven versionning, allowing to deal with SNAPSHOTs, downloading the latest version, etc.</li>
-				<li>Maven ecosystem, allowing to use out of the box dozens of existing plugins that just need a few configuration,</li>
-				<li>And many more Maven advantages, such as profiles/settings/encryption and so on, already managed by Maven engine!</li>
-			</ul>
-		</p>
-		<h4>3. Default and/or shared configuration</h4>
-		<p>Another really nice feature that we can use from Maven is inheritance. As we're using Maven variables in order to obtain the different values we need to use, it's not mandatory for us to provide them from the command line, and we can simply create another pom.xml file, inheriting from the one we created initially in order to set up some values:</p>
-		<p>
-			{% gist 7435317 %}
-		</p>
-		<p>From this example, I just simply created a new pom defining a few values as <code>properties</code>. I can then simply install this pom locally thanks to <code>mvn install</code>, or share it with your colleagues thanks to a shared repository such as Nexus.</p>
-		<p>Finally, and because some values are already present in this configuration, I can invoke my Maven executable with the same type of commands, but without specifying all the default values:</p>
-		<p>
-			{% gist 7435709 %}
-		</p>
-		<p>Thanks to this new invokation (note that the <code>--maven-reference</code> has changed), I can invoke the same executable without specifying all the parameters. Moreover, if I shared this new pom.xml with some coworkers, they can invoke the same with a shared configuration! Icing on the cake, and thanks to Maven, this shared configuration is also versionned, and downloaded automatically when needed!</p>
-		<p>For more advanded usage, you can even think of using Maven profiles, Maven settings and their global parameters, etc.</p>
-	</div>
-</div>

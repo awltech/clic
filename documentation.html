@@ -21,6 +21,7 @@ title: CLiC - Documentation
 				<li><a href="#command-implementation">Implementing your command</a></li>
 				<li><a href="#plugin-packaging">Packaging and sharing your plugin</a></li>
 				<li><a href="#flow-definition">Defining an execution flow</a></li>
+				<li><a href="#programmatic-invokation">Invoking a command programmatically</a></li>
 			</ul>
 		</p>
 	</div>
@@ -134,7 +135,7 @@ title: CLiC - Documentation
 			{% gist 7373922 %}
 		</p>
 		<h4>0. Defining the flow</h4>
-		<p>As you can see from this example, you can use the <code>&lt;flow&gt;</code> tag from the extension point in order to define a new flow. For this, you'll have to provide a <code>name</code> which will be used both for getting information about your flow, but also for invoking him. Then, your flow can contain as many <code>commandReference</code> elements as you need. A <code>commandReference</code> is actually only the name of the command you'd like to invoke. From the example below, it shows that the flow which has been defined will call successively the commands <code>list</code>, <code>example:hello</code> (which is defined in the exact same plugin), and <code>list:flow</code>.</p>
+		<p>As you can see from this example, you can use the <code>&lt;flow&gt;</code> tag from the extension point in order to define a new flow. For this, you'll have to provide a <code>name</code> which will be used both for getting information about your flow, but also for invoking him. Then, your flow can contain as many <code>commandReference</code> elements as you need. A <code>commandReference</code> is actually only the name of the command you'd like to invoke. From the example below, it shows that the flow which has been defined will call successively the commands <code>example:hello</code> (which is defined in the exact same plugin), <code>list</code>, and <code>help</code>.</p>
 		<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> <strong>Info:</strong> We recommend as a good practice that the name of your flow should contain something indicating it's a flow. Something like <i>flow:sample</i>, for example.</div>
 		<p>For sure, you can also use Eclipse's extension point editor in order to have a graphical interface allowing to manipulate those flows:</p>
 		<p><center><img src="resources/flow.png" alt="Plugin editor"/></center></p>
@@ -142,9 +143,9 @@ title: CLiC - Documentation
 		<p><center><img src="resources/flow2.png" alt="Plugin editor"/></center></p>
 		<p><center><img src="resources/flow3.png" alt="Plugin editor"/></center></p>
 		<h4>1. Using the flow</h4>
-		<p>Once the plugin defining the flow installed in your Eclipse instance, you'll be able to invoke him directly from CLiC. In order to get information about the existing flows in your Eclipse instance, simply run the <code>list:flows</code> command, and you'll get information about all the flows which are available.</p>
+		<p>Once the plugin defining the flow installed in your Eclipse instance, you'll be able to invoke him directly from CLiC. In order to get information about the existing flows in your Eclipse instance, simply run the <code>list</code> command, and you'll get information about all the flows which are available.</p>
 		<p><center><img src="resources/flows.png" alt="Plugin editor"/></center></p>
-		<p>Then, you just have to type in the command line your flow's reference in order to execute it. Based on our example, I can simply execute <code>flow:example</code> command to see the result:</p>
+		<p>Then, you just have to type in the command line your flow's reference in order to execute it. Based on our example, I can simply execute <code>flow:sample</code> command to see the result:</p>
 		<p><center><img src="resources/flows2.png" alt="Plugin editor"/></center></p>
 		<h4>2. Managing arguments</h4>
 		<p>From the previous example, you may saw that passing parameters and arguments to flows is actually managed just like with unitary commands. While executing a flow, you can actually specify all the options that may be used by the associated commands so they can interpret the parameters and be executed properly.</p>
@@ -155,4 +156,16 @@ title: CLiC - Documentation
 	</p>
 	<p>From the example below, you can see that it's possible from the <code>example:hello</code> command to create a new argument which will be sent to all the other commands, and interpreted by the commands. So if you had another command for creating a project dedicated to a particular user for example, it could use this new generated parameter to get its information.</p>
 </div>
+</div>
+
+<span id="programmatic-invokation"></span>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Invoking a command programmatically</h3>
+	</div>
+	<div class="panel-body">
+		<p>From a command you defined, or in order to industrialize some already existing commands, you may need to invoke programmatically another command you may have built from your source code. In order to do so, you can simply use the <code>com.worldline.clic.internal.commands.CommandInvoker</code> object, which provides a static method called <code>static IStatus invoke(final String commandChain, final CommandContext context)</code>.</p>
+		<p>Using this <code>invoke</code> method, you can ask the internal engine for executing another complete command, with parameters and so on. Please note that while using this method, this new command will be executed in the same thread as the parent command.</p>
+	</div>
 </div>
