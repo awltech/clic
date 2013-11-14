@@ -82,9 +82,13 @@ public class HelpCommand extends AbstractCommand {
 				.getInstance().createCommand(options.valueOf(command))
 				: CommandRegistry.getInstance().createCommand("help");
 		try {
-			context.write(ClicMessages.COMMAND_HELP.value(options
-					.valueOf(command), CommandRegistry.getInstance()
-					.getCommandDescription(options.valueOf(command))));
+			context.write(options.has(command) ? ClicMessages.COMMAND_HELP
+					.value(options.valueOf(command),
+							CommandRegistry.getInstance()
+									.getCommandDescription(
+											options.valueOf(command)))
+					: ClicMessages.COMMAND_HELP.value("help", CommandRegistry
+							.getInstance().getCommandDescription("help")));
 			createdCommand.getParser().printHelpOn(context.getWriter());
 		} catch (final IOException e) {
 			context.write(ClicMessages.COMMAND_EXECUTION_ERROR.value(e
