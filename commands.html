@@ -105,5 +105,8 @@ title: CLiC - Commands
 			<p>For more advanded usage, you can even think of using Maven profiles, Maven settings and their global parameters, etc.</p>
 			<h4>4. Industrialization of Maven commands</h4>
 			<p>Please note that thanks to the programmatic invocation of commands, it's possible, and really easy, to bring some industrialization while dealing with Maven commands execution. You can indeed write your own command which allows to generate a complete Maven command, and then execute it with your own parameters. Have a look at the <a href="documentation.html#programmatic-invokation">documentation</a> to see how to invoke commands programmatically ;)</p>
+			<h4>5. Defining flows directly in Maven</h4>
+			<p>On top of the flow feature which is available directly in CLiC, it's also possible to manage your flows directly from Maven. Indeed, it's possible to call various goals in the same command line, and you can also define a Maven plugin allowing to wrap different directives to be executed.</p>
+			<p>As for Maven, if you want to develop some flows that you'd like to be invoked remotely, we recommend to develop a Maven plugin managing the flow you'd like to execute by invoking sequentially the commands you'd like to run.</p>
 		</div>
 	</div>
