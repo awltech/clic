@@ -22,6 +22,8 @@
 package com.worldline.clic.internal.view;
 
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -33,8 +35,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.worldline.clic.commands.CommandContext;
 import com.worldline.clic.internal.ClicMessages;
-import com.worldline.clic.internal.assist.ContentAssistProvider;
-import com.worldline.clic.internal.assist.impl.CommandAssistProcessor;
+import com.worldline.clic.internal.assist.ContentAssistProcessor;
 import com.worldline.clic.internal.commands.CommandProcessor;
 
 /**
@@ -82,41 +83,55 @@ public class CommandLineClientView extends ViewPart {
 		final Composite background = new Composite(parent, SWT.NONE);
 		background.setLayout(new FormLayout());
 
+		final List<String> commandHistory = new ArrayList<String>();
+
 		commandText = new StyledText(background, SWT.BORDER);
 		new FormDataBuilder().left().bottom().right().apply(commandText);
 
-		historyText = new StyledText(background, SWT.READ_ONLY | SWT.MULTI
-				| SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		new FormDataBuilder().left().right().top().bottom(commandText)
-				.apply(historyText);
+		historyText = new StyledText(background, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		new FormDataBuilder().left().right().top().bottom(commandText).apply(historyText);
 		writer = new HistoryBufferedWriter(historyText, 10000);
 		context = new CommandContext(writer);
 		commandText.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
-				if (e.keyCode == SWT.CR
-						&& commandText.getText().trim().length() > 0) {
+				if (e.keyCode == SWT.CR && commandText.getText().trim().length() > 0) {
 					final String command = commandText.getText().trim();
+					commandHistory.add(command);
+					if (commandHistory.size() > 10)
+						commandHistory.remove(0);
 					writer.write("> " + command);
 					commandText.setText("");
 
 					historyText.update();
 					commandText.update();
 
-					final CommandProcessor commandProcessor = new CommandProcessor(
-							command, context);
-					commandProcessor
-							.addJobChangeListener(new CommandProcessorFinalizer(
-									commandProcessor, writer));
+					final CommandProcessor commandProcessor = new CommandProcessor(command, context);
+					commandProcessor.addJobChangeListener(new CommandProcessorFinalizer(commandProcessor, writer));
 					commandProcessor.schedule();
+				}
+				if (e.keyCode == SWT.TAB || (e.stateMask == SWT.CTRL && e.keyCode == SWT.SPACE)) {
+					String initialCommand = commandText.getText().trim();
+					int initialCaretOffset = commandText.getCaretOffset();
+					if (e.keyCode == SWT.TAB)
+						initialCaretOffset--;
+					String finalCommand = ContentAssistProcessor.assist(initialCommand, initialCaretOffset);
+					int finalCaretOffset = initialCaretOffset + finalCommand.length() - initialCommand.length();
+
+					commandText.setText(finalCommand);
+					commandText.setCaretOffset(finalCaretOffset);
+					commandText.update();
+				}
+				if (e.keyCode == SWT.UP) {
+					if (commandHistory.size() > 0) {
+						commandText.setText(commandHistory.get(commandHistory.size() - 1));
+						commandText.update();
+					}
 				}
 			}
 		});
 
-		new ContentAssistProvider(commandText, new CommandAssistProcessor());
-
-		getViewSite().getActionBars().getToolBarManager()
-				.add(new HistoryCleanAction(writer));
+		getViewSite().getActionBars().getToolBarManager().add(new HistoryCleanAction(writer));
 
 		writer.write(ClicMessages.CLIC_WELCOME.value());
 	}
