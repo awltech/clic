@@ -115,8 +115,10 @@ public class CommandLineClientView extends ViewPart {
 				} else if (e.keyCode == SWT.TAB || (e.stateMask == SWT.CTRL && e.keyCode == SWT.SPACE)) {
 					String initialCommand = commandText.getText();
 					int initialCaretOffset = commandText.getCaretOffset();
-					if (e.keyCode == SWT.TAB)
+					if (e.keyCode == SWT.TAB) {
 						initialCaretOffset--;
+						initialCommand = initialCommand.substring(0, initialCommand.length() - 1);
+					}
 					String finalCommand = ContentAssistProcessor.assist(initialCommand, initialCaretOffset);
 					int finalCaretOffset = initialCaretOffset + finalCommand.length() - initialCommand.length();
 

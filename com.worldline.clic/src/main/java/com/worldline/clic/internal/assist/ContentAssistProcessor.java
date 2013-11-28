@@ -87,18 +87,23 @@ public class ContentAssistProcessor {
 			String commandName = commandChunks[0];
 			String argumentValue = commandChunks[cursorChunkLocation];
 			String argumentPrefix = argumentValue.substring(1, cursorPositionInChunk);
+
+			AbstractCommand command = CommandRegistry.getInstance().createCommand(commandName);
+			Set<String> possibleOptions = new LinkedHashSet<String>();
+			for (String option : command.getParser().recognizedOptions().keySet()) {
+				if (option.startsWith(argumentPrefix))
+					possibleOptions.add(option);
+			}
+
 			if (argumentPrefix.length() > 0) {
-				AbstractCommand command = CommandRegistry.getInstance().createCommand(commandName);
-
-				Set<String> possibleOptions = new LinkedHashSet<String>();
-				for (String option : command.getParser().recognizedOptions().keySet()) {
-					if (option.startsWith(argumentPrefix))
-						possibleOptions.add(option);
-				}
-
 				String expandedArgument = getExpandedPrefix(argumentPrefix, possibleOptions);
 				commandChunks[cursorChunkLocation] = "-"
 						+ expandedArgument
+						+ (argumentValue.length() > cursorPositionInChunk ? commandChunks[cursorChunkLocation]
+								.substring(argumentPrefix.length() + 1) : "");
+			} else if (argumentPrefix.length() == 0 && possibleOptions.size() == 1) {
+				commandChunks[cursorChunkLocation] = "-"
+						+ possibleOptions.iterator().next()
 						+ (argumentValue.length() > cursorPositionInChunk ? commandChunks[cursorChunkLocation]
 								.substring(argumentPrefix.length() + 1) : "");
 			}
