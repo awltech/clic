@@ -79,9 +79,11 @@ public class ContentAssistProcessor {
 			String commandPrefix = initialValue.substring(0, cursorPositionInChunk);
 			String commonExpandedPrefix = getExpandedPrefix(commandPrefix, CommandRegistry.getInstance()
 					.getCommandsList());
-			commandChunks[0] = commonExpandedPrefix
-					+ (initialValue.length() > cursorPositionInChunk ? initialValue.substring(commonExpandedPrefix
-							.length()) : "");
+			if (commonExpandedPrefix != null && commonExpandedPrefix.length() > 0) {
+				commandChunks[0] = commonExpandedPrefix
+						+ (initialValue.length() > cursorPositionInChunk ? initialValue.substring(commonExpandedPrefix
+								.length()) : "");
+			}
 		} else if (commandChunks[cursorChunkLocation].startsWith("-")) {
 			// In this case, we are in an argument.
 			String commandName = commandChunks[0];
