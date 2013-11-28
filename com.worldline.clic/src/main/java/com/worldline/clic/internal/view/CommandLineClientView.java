@@ -113,7 +113,7 @@ public class CommandLineClientView extends ViewPart {
 					commandProcessor.addJobChangeListener(new CommandProcessorFinalizer(commandProcessor, writer));
 					commandProcessor.schedule();
 				} else if (e.keyCode == SWT.TAB || (e.stateMask == SWT.CTRL && e.keyCode == SWT.SPACE)) {
-					String initialCommand = commandText.getText().trim();
+					String initialCommand = commandText.getText();
 					int initialCaretOffset = commandText.getCaretOffset();
 					if (e.keyCode == SWT.TAB)
 						initialCaretOffset--;
