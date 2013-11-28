@@ -22,8 +22,6 @@
 package com.worldline.clic.internal.view;
 
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -37,6 +35,7 @@ import com.worldline.clic.commands.CommandContext;
 import com.worldline.clic.internal.ClicMessages;
 import com.worldline.clic.internal.assist.ContentAssistProcessor;
 import com.worldline.clic.internal.commands.CommandProcessor;
+import com.worldline.clic.internal.view.history.CommandHistory;
 
 /**
  * This {@link CommandLineClientView} is actually an Eclipse {@link ViewPart}
@@ -76,6 +75,11 @@ public class CommandLineClientView extends ViewPart {
 	private CommandContext context;
 
 	/**
+	 * The {@link CommandHistory} used to retrieved previously typed commands.
+	 */
+	private CommandHistory commandHistory;
+
+	/**
 	 * Allows to create all the graphical components to be used in the GUI
 	 */
 	@Override
@@ -83,23 +87,22 @@ public class CommandLineClientView extends ViewPart {
 		final Composite background = new Composite(parent, SWT.NONE);
 		background.setLayout(new FormLayout());
 
-		final List<String> commandHistory = new ArrayList<String>();
-
-		commandText = new StyledText(background, SWT.BORDER);
+		this.commandText = new StyledText(background, SWT.BORDER);
 		new FormDataBuilder().left().bottom().right().apply(commandText);
 
-		historyText = new StyledText(background, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		this.historyText = new StyledText(background, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL
+				| SWT.H_SCROLL);
 		new FormDataBuilder().left().right().top().bottom(commandText).apply(historyText);
-		writer = new HistoryBufferedWriter(historyText, 10000);
-		context = new CommandContext(writer);
+		this.writer = new HistoryBufferedWriter(historyText, 10000);
+		this.context = new CommandContext(writer);
+		this.commandHistory = new CommandHistory(50);
+
 		commandText.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
 				if (e.keyCode == SWT.CR && commandText.getText().trim().length() > 0) {
 					final String command = commandText.getText().trim();
-					commandHistory.add(command);
-					if (commandHistory.size() > 10)
-						commandHistory.remove(0);
+					commandHistory.addCommand(command);
 					writer.write("> " + command);
 					commandText.setText("");
 
@@ -109,8 +112,7 @@ public class CommandLineClientView extends ViewPart {
 					final CommandProcessor commandProcessor = new CommandProcessor(command, context);
 					commandProcessor.addJobChangeListener(new CommandProcessorFinalizer(commandProcessor, writer));
 					commandProcessor.schedule();
-				}
-				if (e.keyCode == SWT.TAB || (e.stateMask == SWT.CTRL && e.keyCode == SWT.SPACE)) {
+				} else if (e.keyCode == SWT.TAB || (e.stateMask == SWT.CTRL && e.keyCode == SWT.SPACE)) {
 					String initialCommand = commandText.getText().trim();
 					int initialCaretOffset = commandText.getCaretOffset();
 					if (e.keyCode == SWT.TAB)
@@ -121,10 +123,18 @@ public class CommandLineClientView extends ViewPart {
 					commandText.setText(finalCommand);
 					commandText.setCaretOffset(finalCaretOffset);
 					commandText.update();
-				}
-				if (e.keyCode == SWT.UP) {
-					if (commandHistory.size() > 0) {
-						commandText.setText(commandHistory.get(commandHistory.size() - 1));
+				} else if (e.keyCode == SWT.ARROW_UP) {
+					String newCommand = commandHistory.getPreviousCommand();
+					if (newCommand != null) {
+						commandText.setText(newCommand);
+						commandText.setCaretOffset(newCommand.length());
+						commandText.update();
+					}
+				} else if (e.keyCode == SWT.ARROW_DOWN) {
+					String newCommand = commandHistory.getNextCommand();
+					if (newCommand != null) {
+						commandText.setText(newCommand);
+						commandText.setCaretOffset(newCommand.length());
 						commandText.update();
 					}
 				}
