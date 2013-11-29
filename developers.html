@@ -18,6 +18,7 @@ title: CLiC - Developers
 			<ul>
 				<li><a href="#source-header">Updating the source header</a></li>
 				<li><a href="#good-practices">Development good practices guidance</a></li>
+				<li><a href="#maven-interactions">Easy Maven interactions in your tasks/plugins</a></li>
 			</ul>
 		</p>
 	</div>
@@ -53,5 +54,27 @@ title: CLiC - Developers
 				<li>All the source code should be formatted using Eclipse's default formatter,</li>
 				<li>No Eclipse warnings should be found in the source code,</li>
 			</ul></p>
+		</div>
+	</div>
+
+	<span id="maven-interactions"></span>
+
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">Easy Maven interactions in your tasks/plugins</h3>
+		</div>
+		<div class="panel-body">
+			<p>While CLiC allows to define tasks which are based on Maven, thanks to its generic Maven plugin, we thought that it might be useful to ease a little bit Maven interactions for people aiming at developing new tasks or plugins relying on Maven. That's why we just developed a small Java library: <a href="https://github.com/awltech/clic-utils" target="_blank">clic-utils</a> which contains some APIs easing Maven interactions.</p>
+			<p>The aim of this library is to help you:
+				<ul>
+					<li>Generating pom.xml files using some templates,</li>
+					<li>Generating Maven queries to be invoked,</li>
+					<li>Dealing with CLiC-compliant command lines using the same parser,</li>
+					<li>Executing Maven commands in various modes (using a pom.xml file, or invoking plugins),</li>
+					<li>Filtering the outputs in order to retrieve some results of the execution</li>
+				</ul>
+				And many other small features that could help you while developing things relying on Maven.
+			</p>
+			<p>We don't provide any detailed documentation on that API right now, as everything contains javadoc and is quite easy to use. We'll write down some documentation if needed.</p>
 		</div>
 	</div>
