@@ -21,6 +21,7 @@
  */
 package com.worldline.clic.internal.assist;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -40,6 +41,24 @@ import com.worldline.clic.internal.commands.CommandRegistry;
  */
 public class ContentAssistProcessor {
 
+	/**
+	 * Set that contains all commands and command flows identifiers
+	 */
+	private static Set<String> allCommands = new HashSet<String>();
+	
+	/**
+	 * Static initializer
+	 */
+	static {
+		allCommands.addAll(CommandRegistry.getInstance().getCommandsList());
+		allCommands.addAll(CommandRegistry.getInstance().getFlows().keySet());
+	}
+	
+	// Private constructor as par static helper class
+	private ContentAssistProcessor() {
+		
+	}
+	
 	/**
 	 * Takes the command and the current caret position, and completes the
 	 * command with matching auto completion.
@@ -77,8 +96,7 @@ public class ContentAssistProcessor {
 			// In this case, we are in the command.
 			String initialValue = commandChunks[0];
 			String commandPrefix = initialValue.substring(0, cursorPositionInChunk);
-			String commonExpandedPrefix = getExpandedPrefix(commandPrefix, CommandRegistry.getInstance()
-					.getCommandsList());
+			String commonExpandedPrefix = getExpandedPrefix(commandPrefix, allCommands);
 			if (commonExpandedPrefix != null && commonExpandedPrefix.length() > 0) {
 				commandChunks[0] = commonExpandedPrefix
 						+ (initialValue.length() > cursorPositionInChunk ? initialValue.substring(commonExpandedPrefix
