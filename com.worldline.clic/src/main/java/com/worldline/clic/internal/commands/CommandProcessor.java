@@ -21,7 +21,13 @@
  */
 package com.worldline.clic.internal.commands;
 
+import static com.worldline.clic.internal.ClicMessages.COMMAND_NOT_FOUND;
+import static com.worldline.clic.internal.ClicMessages.COMMAND_PARSING_ERROR;
+import static com.worldline.clic.internal.ClicMessages.PARSER_UNBALANCED_QUOTES;
+import static com.worldline.clic.internal.ClicMessages.SEPARATOR;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.StringTokenizer;
 
 import joptsimple.OptionException;
@@ -36,8 +42,9 @@ import com.google.common.collect.ObjectArrays;
 import com.worldline.clic.commands.AbstractCommand;
 import com.worldline.clic.commands.CommandContext;
 import com.worldline.clic.internal.Activator;
-
-import static com.worldline.clic.internal.ClicMessages.*;
+import com.worldline.clic.listeners.ProcessedCommandEvent;
+import com.worldline.clic.listeners.ProcessedCommandListener;
+import com.worldline.clic.listeners.internal.ListenerRegistry;
 
 /**
  * This {@link CommandProcessor} is an extension of a {@link Job} which aims at
@@ -78,8 +85,7 @@ public class CommandProcessor extends Job {
 	 *            the execution context to be used during the whole lifecycle of
 	 *            the processed command
 	 */
-	public CommandProcessor(final String commandChain,
-			final CommandContext context) {
+	public CommandProcessor(final String commandChain, final CommandContext context) {
 		super("Command Processor");
 		this.context = context;
 		this.commandChain = commandChain;
@@ -106,8 +112,7 @@ public class CommandProcessor extends Job {
 	 * @param context
 	 *            the execution context to be used
 	 */
-	private static void processCommand(final String command,
-			final CommandContext context) {
+	private static void processCommand(final String command, final CommandContext context) {
 		String firstChunk = "";
 		String[] parameters = new String[0];
 		boolean flow = false;
@@ -116,12 +121,10 @@ public class CommandProcessor extends Job {
 			firstChunk = command;
 		else {
 			try {
-				parameters = parseCommandLine(command.substring(
-						command.indexOf(" ")).trim());
+				parameters = parseCommandLine(command.substring(command.indexOf(" ")).trim());
 			} catch (final CommandParsingException e) {
 				context.write(COMMAND_PARSING_ERROR.value(e.getMessage()));
-				Activator.sendErrorToErrorLog(
-						COMMAND_PARSING_ERROR.value(e.getMessage()), e);
+				Activator.sendErrorToErrorLog(COMMAND_PARSING_ERROR.value(e.getMessage()), e);
 				return;
 			}
 			firstChunk = command.substring(0, command.indexOf(" "));
@@ -130,16 +133,30 @@ public class CommandProcessor extends Job {
 		flow = CommandRegistry.getInstance().getFlows().containsKey(firstChunk);
 
 		if (flow) {
-			final CommandFlowWrapper wrapper = CommandRegistry.getInstance()
-					.getFlows().get(firstChunk);
+			final CommandFlowWrapper wrapper = CommandRegistry.getInstance().getFlows().get(firstChunk);
 			for (final String commandReference : wrapper.getCommandReferences()) {
 				final String[] allParameters = ObjectArrays.concat(parameters,
-						context.getOutputs().toArray(new String[0]),
-						String.class);
+						context.getOutputs().toArray(new String[0]), String.class);
 				launchCommand(commandReference, allParameters, command, context);
 			}
 		} else
 			launchCommand(firstChunk, parameters, command, context);
+
+		// Now, calls the listeners related to Command Process.
+		Collection<ProcessedCommandListener> listeners = ListenerRegistry.getInstance().getListenersFor(
+				ProcessedCommandListener.class);
+		for (ProcessedCommandListener listener : listeners) {
+			try {
+				listener.onEvent(new ProcessedCommandEvent(command));
+			} catch (Exception e) {
+				Activator
+						.getDefault()
+						.getLog()
+						.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+								"An exception was caught while executing listener", e));
+			}
+		}
+
 	}
 
 	/**
@@ -157,21 +174,26 @@ public class CommandProcessor extends Job {
 	 * @param context
 	 *            the command context
 	 */
-	protected static void launchCommand(final String firstChunk,
-			final String[] parameters, final String command,
+	protected static void launchCommand(final String firstChunk, final String[] parameters, final String command,
 			final CommandContext context) {
-		final AbstractCommand commandImplementation = CommandRegistry
-				.getInstance().createCommand(firstChunk);
+		final AbstractCommand commandImplementation = CommandRegistry.getInstance().createCommand(firstChunk);
 		if (commandImplementation != null) {
 			try {
 				computeParameters(commandImplementation, context, parameters);
 			} catch (final OptionException e) {
 				context.write(COMMAND_PARSING_ERROR.value(e.getMessage()));
-				Activator.sendErrorToErrorLog(
-						COMMAND_PARSING_ERROR.value(e.getMessage()), e);
+				Activator.sendErrorToErrorLog(COMMAND_PARSING_ERROR.value(e.getMessage()), e);
 				return;
 			}
-			commandImplementation.execute(context);
+			try {
+				commandImplementation.execute(context);
+			} catch (Exception e) {
+				Activator
+						.getDefault()
+						.getLog()
+						.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+								"An exception was caught while executing command", e));
+			}
 			context.write(SEPARATOR.value());
 		} else
 			context.write(COMMAND_NOT_FOUND.value(command));
@@ -192,9 +214,8 @@ public class CommandProcessor extends Job {
 	 * 
 	 * @see AbstractCommand#parse(String[])
 	 */
-	private static void computeParameters(
-			final AbstractCommand commandImplementation,
-			final CommandContext context, final String[] parameters) {
+	private static void computeParameters(final AbstractCommand commandImplementation, final CommandContext context,
+			final String[] parameters) {
 		commandImplementation.parse(parameters);
 	}
 
@@ -211,8 +232,7 @@ public class CommandProcessor extends Job {
 	 * 
 	 * @throws CommandParsingException
 	 */
-	private static String[] parseCommandLine(final String toProcess)
-			throws CommandParsingException {
+	private static String[] parseCommandLine(final String toProcess) throws CommandParsingException {
 		if (toProcess == null || toProcess.length() == 0)
 			// no command? no string
 			return new String[0];
@@ -220,8 +240,7 @@ public class CommandProcessor extends Job {
 		final int inQuote = 1;
 		final int inDoubleQuote = 2;
 		int state = normal;
-		final StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ",
-				true);
+		final StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ", true);
 		final ArrayList<String> result = new ArrayList<String>();
 		final StringBuilder current = new StringBuilder();
 		boolean lastTokenHasBeenQuoted = false;
@@ -262,8 +281,7 @@ public class CommandProcessor extends Job {
 		if (lastTokenHasBeenQuoted || current.length() != 0)
 			result.add(current.toString());
 		if (state == inQuote || state == inDoubleQuote)
-			throw new CommandParsingException(
-					PARSER_UNBALANCED_QUOTES.value(toProcess));
+			throw new CommandParsingException(PARSER_UNBALANCED_QUOTES.value(toProcess));
 		return result.toArray(new String[result.size()]);
 	}
 

@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="commands" name="commands" schema="schema/commands.exsd"/>
+   <extension-point id="listeners" name="listeners" schema="schema/listeners.exsd"/>
    <extension
          point="org.eclipse.ui.views">
       <view
