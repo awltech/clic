@@ -64,7 +64,7 @@
 		<tycho-version>0.18.1</tycho-version>
 		<eclipse-mirror>http://eclipse.ialto.com</eclipse-mirror>
 		<eclipse-site>${eclipse-mirror}/releases/${platform-version-name}</eclipse-site>
-		<release-type>final</release-type>
+		<release-type>SNAPSHOT</release-type>
 	</properties>
 
 	<profiles>
