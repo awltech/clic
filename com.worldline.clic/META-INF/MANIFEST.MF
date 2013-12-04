@@ -22,6 +22,7 @@ Export-Package: com.google.common.annotations,
  com.google.common.primitives,
  com.google.common.util.concurrent,
  com.worldline.clic.commands,
+ com.worldline.clic.listeners,
  joptsimple,
  joptsimple.internal,
  joptsimple.util
