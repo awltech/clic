@@ -104,7 +104,7 @@
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<configuration>
-					<format>yyyyMMddHHmm'-${platform-version-name}-${release-type}'</format>
+					<format>yyyyMMddHHmm'-${release-type}'</format>
 				</configuration>
 			</plugin>
 			<plugin>
